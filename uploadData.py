@@ -7,7 +7,7 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client.get_database("Project")  # Replace with your database name
 
 # Directory containing your folders and CSV files
-base_directory = 'G:/School/Fall 2024/CPT_S 415/Project/Data/test'  
+base_directory = 'G:/School/Fall 2024/CPT_S 415\/Project/Data/001/release/User1'  
 
 for folder_name in os.listdir(base_directory):
     folder_path = os.path.join(base_directory, folder_name)
