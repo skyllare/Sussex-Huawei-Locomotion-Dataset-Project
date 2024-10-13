@@ -1,6 +1,9 @@
 import os
 import pandas as pd
+import time
 from pymongo import MongoClient
+
+start_time = time.time()
 
 # MongoDB connection
 client = MongoClient('mongodb://localhost:27017/')
@@ -35,3 +38,5 @@ for folder_name in os.listdir(base_directory):
                     print(f"Error processing {file_path}: {e}")
 
 print("Data upload complete.")
+end_time = time.time()
+print(f'Time taken to ingest data: {end_time - start_time} seconds')
