@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import config.config as config
+from config import config
 
 base_directory = config.base_directory
 
@@ -22,32 +22,31 @@ for folder_name in os.listdir(base_directory):
                 df = pd.read_csv(
                     input_file_path, delim_whitespace=True, header=None)
                 if "API" in txt_file:
-                    df.columns = [b
-                                  df.columns= ["Time", "CoarseLabel", "FineLabel",
-                                                "RoadLabel", "TrafficLabel", "TunnelsLabel", "SocialLabel", "FoodLanbel"]
-                                  elif "Motion" in txt_file:
-                                  df.columns= ["Time", "AccelerationX", "AccelerationY",
-                                                "AccelerationZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ", "MagnetometerX",
-                                                "MagnetometerY", "MagnetometerZ", "OrientationW", "OrientationX",
-                                                "OrientationY", "OrientationZ", "GravityX", "GravityY", "GravityZ", "LinearAccelerationX",
-                                                "LinearAccelerationy", "LinearAccelerationZ", "Pressure", "Altitude", "Temperature"]
-                                  elif "Location" in txt_file:
-                                  df.columns= ["Time", "Ignore1", "Ignore2",
-                                                "Accuracy", "Latitude", "Longitude", "Altitude"]
-                                  elif "labels_track_food" in txt_file:
-                                  df.columns= ["StartTime", "EndTime", "Label"]
-                                  elif "labels_track_main" in txt_file:
-                                  df.columns= ["StartTime", "EndTime", "Activity"]
-                                  elif "labels_track_road" in txt_file:
-                                  df.columns= ["StartTime", "EndTime", "Label"]
-                                  elif "labels_track_social" in txt_file:
-                                  df.columns= ["StartTime", "EndTime", "Label"]
-                                  elif "labels_track_traffic" in txt_file:
-                                  df.columns= ["StartTime", "EndTime", "Label"]
-                                  elif "labels_track_tunnels" in txt_file:
-                                  df.columns= ["StartTime", "EndTime", "Label"]
-                                  else:
-                                  continue
+                    df.columns = ["Time", "CoarseLabel", "FineLabel",
+                                  "RoadLabel", "TrafficLabel", "TunnelsLabel", "SocialLabel", "FoodLanbel"]
+                elif "Motion" in txt_file:
+                    df.columns = ["Time", "AccelerationX", "AccelerationY",
+                                  "AccelerationZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ", "MagnetometerX",
+                                  "MagnetometerY", "MagnetometerZ", "OrientationW", "OrientationX",
+                                  "OrientationY", "OrientationZ", "GravityX", "GravityY", "GravityZ", "LinearAccelerationX",
+                                  "LinearAccelerationy", "LinearAccelerationZ", "Pressure", "Altitude", "Temperature"]
+                elif "Location" in txt_file:
+                    df.columns = ["Time", "Ignore1", "Ignore2",
+                                  "Accuracy", "Latitude", "Longitude", "Altitude"]
+                elif "labels_track_food" in txt_file:
+                    df.columns = ["StartTime", "EndTime", "Label"]
+                elif "labels_track_main" in txt_file:
+                    df.columns = ["StartTime", "EndTime", "Activity"]
+                elif "labels_track_road" in txt_file:
+                    df.columns = ["StartTime", "EndTime", "Label"]
+                elif "labels_track_social" in txt_file:
+                    df.columns = ["StartTime", "EndTime", "Label"]
+                elif "labels_track_traffic" in txt_file:
+                    df.columns = ["StartTime", "EndTime", "Label"]
+                elif "labels_track_tunnels" in txt_file:
+                    df.columns = ["StartTime", "EndTime", "Label"]
+                else:
+                    continue
 
-                                  # Save the DataFrame to a CSV file
-                                  df.to_csv(output_file_path, index=False)
+                # Save the DataFrame to a CSV file
+                df.to_csv(output_file_path, index=False)

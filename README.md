@@ -2,6 +2,8 @@
 
 **Team Name**: Big Data Energy
 
+**Class**: CPT_S 415 
+
 **Team Members**:  
 - Skyllar Estill  
 - Caitlin Graves  
@@ -77,3 +79,12 @@ cp config/config_template.py config.py
 ```
 
 3. Update the base_directory variable with the path to your local directory where the release/User1 folder is stored.
+
+### 4. Process and upload the dataset to the MongoDB database using the Python scripts in the scripts folder
+
+Make sure you're in the root folder of the project.
+
+```bash
+python -m scripts.fileToCSV
+python -m scripts.uploadData
+```
