@@ -23,8 +23,9 @@ for folder_name in os.listdir(base_directory):
                 df = pd.read_csv(
                     input_file_path, delim_whitespace=True, header=None)
                 if "API" in txt_file:
-                    df.columns = ["Time", "CoarseLabel", "FineLabel",
-                                  "RoadLabel", "TrafficLabel", "TunnelsLabel", "SocialLabel", "FoodLanbel"]
+                    df.columns = ["Time", "Ignore2", "Ignore2",
+                                  "StillConfidence", "OnFootConfidence", "WalkingConfidence", "RunningConfidence", "BikeConfidence",
+                                  "VehicleConfidence", "TiltingConfidence","UnknownConfidence"]
                 elif "Motion" in txt_file:
                     df.columns = ["Time", "AccelerationX", "AccelerationY",
                                   "AccelerationZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ", "MagnetometerX",
