@@ -8,7 +8,8 @@ for folder_name in os.listdir(base_directory):
     folder_path = os.path.join(base_directory, folder_name)
     if os.path.isdir(folder_path):  # Check if it is a directory
         for txt_file in os.listdir(folder_path):
-            file_names = ["Label"]
+            file_names = ["API","Location", "Motion", "Label", "labels_track_food","labels_track_main", "labels_track_road", "labels_track_social",
+                          "labels_track_traffic", "labels_track_tunnels"]
             print(txt_file)
             if txt_file.endswith('.txt') and any(name in txt_file for name in file_names):
                 input_file_path = os.path.join(folder_path, txt_file)
@@ -27,9 +28,12 @@ for folder_name in os.listdir(base_directory):
                 elif "Motion" in txt_file:
                     df.columns = ["Time", "AccelerationX", "AccelerationY",
                                   "AccelerationZ", "GyroscopeX", "GyroscopeY", "GyroscopeZ", "MagnetometerX",
-                                  "MagnetometerY", "MagnetometerZ", "OrientationW", "OrientationX",
-                                  "OrientationY", "OrientationZ", "GravityX", "GravityY", "GravityZ", "LinearAccelerationX",
-                                  "LinearAccelerationy", "LinearAccelerationZ", "Pressure", "Altitude", "Temperature"]
+                                    "MagnetometerY", "MagnetometerZ", "OrientationW", "OrientationX",
+                                    "OrientationY", "OrientationZ", "GravityX", "GravityY", "GravityZ", "LinearAccelerationX",
+                                    "LinearAccelerationy", "LinearAccelerationZ", "Pressure", "Altitude", "Temperature"]
+                elif "Label" in txt_file:
+                    df.columns = ["Time", "CoarseLabel", "FineLabel",
+                                    "RoadLabel", "TrafficLabel", "TunnelsLabel", "SocialLabel", "FoodLabel"]
                 elif "Location" in txt_file:
                     df.columns = ["Time", "Ignore1", "Ignore2",
                                   "Accuracy", "Latitude", "Longitude", "Altitude"]
