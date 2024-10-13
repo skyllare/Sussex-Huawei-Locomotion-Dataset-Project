@@ -86,5 +86,7 @@ Make sure you're in the root folder of the project.
 
 ```bash
 python -m scripts.fileToCSV
+```
+```bash
 python -m scripts.uploadData
 ```
