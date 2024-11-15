@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import time
 from pymongo import MongoClient
-import config
+from config import config
 
 start_time = time.time()
 
