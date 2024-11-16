@@ -4,7 +4,7 @@ import numpy as np
 
 MONGO_URI = 'mongodb://localhost:27017/'
 DATABASE_NAME = 'Project'
-IGNORED_COLUMNS_GENERAL = ['Ignore1', 'Ignore2']
+IGNORED_COLUMNS_GENERAL = ['Ignore1', 'Ignore2', 'Ignore']
 IGNORED_COLUMNS_MOTION = ['Altitude', 'Temperature']
 BATCH_SIZE = 1000  # Number of documents to process in each batch
 
@@ -14,7 +14,7 @@ def is_nan(value):
 
 # Removes documents containing NaN or null values, and delete ignored columns
 def clean_collection(collection, ignored_columns):
-    print(f"Cleaning collection: {collection.name}")
+    print(f"\nCleaning collection: {collection.name}\n")
     
     cursor = collection.find()
     to_delete = []
@@ -30,7 +30,6 @@ def clean_collection(collection, ignored_columns):
         # Remove ignored columns from the document
         for column in ignored_columns:
             if column in doc:
-                print(f"Removing column: {column} from document ID: {doc_id}")
                 unset_fields[column] = ""
                 update_needed = True
 
