@@ -1,6 +1,8 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, sqrt
 from pyspark.ml.feature import VectorAssembler
+from pyspark.ml.classification import DecisionTreeClassifier
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
 def get_data():
     # the memory may need to be upped for the full dataset
@@ -30,7 +32,6 @@ def get_data():
 
 # def build_tree(combined_data):
     
-
 combined_data = get_data()
 combined_data = combined_data.withColumn(
     "AccelerationMagnitude", 
@@ -54,4 +55,21 @@ assembler = VectorAssembler(
 )
 
 combined_data = assembler.transform(combined_data)
-combined_data.show()
+# combined_data.show()
+
+train_data, test_data = combined_data.randomSplit([0.8, 0.2], seed=1234)
+
+dt = DecisionTreeClassifier(featuresCol="features", labelCol="CoarseLabel")
+
+model = dt.fit(train_data)
+
+predictions = model.transform(test_data)
+
+evaluator = MulticlassClassificationEvaluator(
+    labelCol="CoarseLabel", predictionCol="prediction", metricName="accuracy"
+)
+
+accuracy = evaluator.evaluate(predictions)
+print(f"Accuracy: {accuracy}")
+
+print(model.toDebugString)
