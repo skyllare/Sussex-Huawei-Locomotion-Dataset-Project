@@ -33,3 +33,4 @@ def get_data():
 
 combined_data = get_data()
 combined_data.show()
+combined_data = combined_data.dropna()
