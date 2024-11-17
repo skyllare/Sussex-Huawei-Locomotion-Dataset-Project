@@ -21,8 +21,6 @@ Label_Data = Label_Data.select("date", "Time", "CoarseLabel", "FineLabel",
 Label_Data.orderBy("Time")
 
 # Function to convert a datetime object to Unix time in milliseconds
-
-
 def datetime_to_unix_milliseconds(dt):
     unix_time_seconds = int(dt.timestamp())
     unix_time_milliseconds = unix_time_seconds * 1000  # convert to milliseconds
@@ -48,13 +46,17 @@ def format_duration(milliseconds):
 
 # Function to compute statistics for a given date range
 def compute_stats(start_time, end_time=None):
-    time_filter = (col("Time") >= lit(start_time))
-
-    if end_time:
-        time_filter = time_filter & (col("Time") <= lit(end_time))
-        print(f"Time range: {start_time} to {end_time}")
+    if end_time is None:
+        # Convert start_time from milliseconds to a datetime object
+        start_datetime = datetime.fromtimestamp(start_time / 1000.0)
+        # Set end_time to the end of the day (23:59:59)
+        end_datetime = start_datetime.replace(hour=23, minute=59, second=59, microsecond=999000)
+        end_time = int(end_datetime.timestamp() * 1000)
+        print(f"Checking for times during the day: {start_time} to {end_time}")
     else:
-        print(f"Start time: {start_time}")
+        print(f"Time range: {start_time} to {end_time}")
+
+    time_filter = (col("Time") >= lit(start_time)) & (col("Time") <= lit(end_time))
 
     # Apply filters
     filtered_data = Label_Data.filter(time_filter)
@@ -63,7 +65,7 @@ def compute_stats(start_time, end_time=None):
     total_count = filtered_data.count()
 
     # Debugging: Print the total count
-    print(f"Total count: {total_count}")
+    # print(f"Total count: {total_count}")
 
     if total_count == 0:
         print("No data found in the specified time range.")
@@ -83,7 +85,7 @@ def compute_stats(start_time, end_time=None):
         # Each instance represents 10 milliseconds
         "TotalTimeMs", col("Count") * 10
     ).withColumn(
-        "TotalTimeReadable", expr("CASE " +
+        "Total Time", expr("CASE " +
                                   "WHEN TotalTimeMs < 60000 THEN CONCAT(ROUND(TotalTimeMs / 1000, 2), ' seconds') " +
                                   "WHEN TotalTimeMs < 3600000 THEN CONCAT(ROUND(TotalTimeMs / 60000, 2), ' minutes') " +
                                   "ELSE CONCAT(ROUND(TotalTimeMs / 3600000, 2), ' hours') " +
@@ -106,12 +108,13 @@ def compute_stats(start_time, end_time=None):
 
     label_distribution = label_distribution.orderBy("CoarseLabel")
     label_distribution = label_distribution.select(
-        "Activity", "TotalTimeMs", "TotalTimeReadable", "Count", "Percentage")
+        "Activity", "Total Time", "Percentage")
     label_distribution.show()
 
 
 # Example
 # 1: Filter by a date range (3/1/2017 to 7/3/2017)
+print("Stats in date range (3/1/2017 to 7/3/2017)")
 start_date = datetime(2017, 3, 1, 14, 0, 0)
 end_date = datetime(2017, 7, 3, 18, 0, 0)
 
@@ -120,26 +123,8 @@ end_time_unix = datetime_to_unix_milliseconds(end_date)
 
 compute_stats(start_time=start_time_unix, end_time=end_time_unix)
 
+# 2: Filter by single date
+print("Stats for 3/1/2017")
+compute_stats(start_time=1488376622000)
+
 spark.stop()
-
-
-# # # Example usage
-# # dt = datetime(2017, 3, 1, 12)
-# # unix_time_ms = datetime_to_unix_milliseconds(dt)
-# # print(unix_time_ms)  # Output: 1488376225000
-
-
-# # # Example
-# # # 1: Filter by a date range (3/1/2017 to 6/1/2017)
-# # start_time = datetime_to_unix_milliseconds(datetime(2017, 3, 1))
-# # end_time = datetime_to_unix_milliseconds(datetime(2017, 6, 1))
-# # compute_stats(start_time, end_time)
-
-# # # 2: Filter by date and specific label
-# # compute_stats(start_date="010317", specific_label=2)
-
-# # # 3: Full range with time filtering
-# # compute_stats(start_date="010317", end_date="010617",
-# #               start_time=1488376625470, end_time=1488377925470)
-
-# # spark.stop()
