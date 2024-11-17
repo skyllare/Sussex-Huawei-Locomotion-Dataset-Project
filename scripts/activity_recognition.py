@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
-import math
+from pyspark.sql.functions import col, sqrt
+from pyspark.ml.feature import VectorAssembler
 
 def get_data():
     # the memory may need to be upped for the full dataset
@@ -32,5 +32,26 @@ def get_data():
     
 
 combined_data = get_data()
-combined_data = combined_data.dropna()
+combined_data = combined_data.withColumn(
+    "AccelerationMagnitude", 
+    sqrt(col("AccelerationX")**2 + col("AccelerationY")**2 + col("AccelerationZ")**2)
+)
+
+combined_data = combined_data.withColumn(
+    "MagnetometerMagnitude", 
+    sqrt(col("MagnetometerX")**2 + col("MagnetometerY")**2 + col("MagnetometerZ")**2)
+)
+
+combined_data = combined_data.withColumn(
+    "LinearAccelerationMagnitude", 
+    sqrt(col("LinearAccelerationX")**2 + col("LinearAccelerationY")**2 + col("LinearAccelerationZ")**2)
+)
+combined_data = combined_data.dropna() 
+
+assembler = VectorAssembler(
+    inputCols=["AccelerationMagnitude", "MagnetometerMagnitude", "LinearAccelerationMagnitude"],
+    outputCol="features"
+)
+
+combined_data = assembler.transform(combined_data)
 combined_data.show()
