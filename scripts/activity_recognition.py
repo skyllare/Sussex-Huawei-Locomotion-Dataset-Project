@@ -71,5 +71,3 @@ evaluator = MulticlassClassificationEvaluator(
 
 accuracy = evaluator.evaluate(predictions)
 print(f"Accuracy: {accuracy}")
-
-print(model.toDebugString)
