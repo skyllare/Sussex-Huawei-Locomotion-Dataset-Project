@@ -90,3 +90,6 @@ python -m scripts.fileToCSV
 ```bash
 python -m scripts.uploadData
 ```
+```bash
+python -m scripts.cleanData
+```
