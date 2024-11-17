@@ -23,7 +23,7 @@ def get_data():
     Hips_Data = Hips_Data.select("date", "Time", 
                                  "AccelerationX", "AccelerationY", "AccelerationZ",
                                  "MagnetometerX", "MagnetometerY", "MagnetometerZ",
-                                 "LinearAcceleartionX", "LinearAcceleartion", "LinearAcceleartionZ")  # Adjust columns as needed
+                                 "LinearAccelerationX", "LinearAccelerationy", "LinearAccelerationZ")  # Adjust columns as needed
 
     # Join the two datasets on the common columns (e.g., "date" and "Time")
     return Label_Data.join(Hips_Data, on=["date", "Time"], how="inner")
@@ -32,5 +32,5 @@ def get_data():
     
 
 combined_data = get_data()
-combined_data.show()
 combined_data = combined_data.dropna()
+combined_data.show()
