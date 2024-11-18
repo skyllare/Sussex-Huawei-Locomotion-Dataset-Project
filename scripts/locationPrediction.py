@@ -12,7 +12,7 @@ from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import StandardScaler
 import folium
-
+from datetime import timedelta, datetime
 
 # Initialize Spark session
 spark = SparkSession.builder \
@@ -57,8 +57,10 @@ pandas_df = df_spark.toPandas()
 scaler = StandardScaler()
 pandas_df[['Latitude', 'Longitude']] = scaler.fit_transform(pandas_df[['Latitude', 'Longitude']])
 
+
 # Prepare the data for LSTM (sequence data preparation)
 def create_sequences(df, seq_length):
+    """Sequence data preparation for LSTM"""
     sequences = []
     labels = []
     for i in range(len(df) - seq_length):
@@ -109,6 +111,9 @@ def predict_for_half_hours(predicted_locations, df):
 # Predict locations at each half-hour and display on map
 predicted_locations = predict_for_half_hours(predictions_original, pandas_df)
 
+
+# Visualize on a map using Folium
+"""Plot the """
 # Visualize on a map using Folium
 def plot_on_map(predicted_df):
     # Initialize the map at the first predicted location (using the first lat/long)
@@ -116,202 +121,28 @@ def plot_on_map(predicted_df):
 
     # Filter the DataFrame to include only rows where the half-hour interval changes
     predicted_df['half_hour_interval_changed'] = predicted_df['half_hour_interval'].ne(predicted_df['half_hour_interval'].shift())
-    
+
+    # Define the base time (start time) for the intervals (00:00)
+    base_time = timedelta(hours=0, minutes=0)  # Start from 00:00
+
     # Add a marker for each predicted location where the half-hour interval has changed
     for index, row in predicted_df.iterrows():
         if row['half_hour_interval_changed']:
+            # Calculate the predicted time for the half-hour interval
+            predicted_time = base_time + timedelta(minutes=row['half_hour_interval'] * 30)
+            
+            # Convert timedelta to datetime for formatting
+            predicted_time = datetime(1, 1, 1) + predicted_time  # Use any arbitrary date
+            formatted_time = predicted_time.strftime("%I:%M %p")  # AM/PM formatting
+
             folium.Marker(
                 location=[row['Predicted_Latitude'], row['Predicted_Longitude']],
-                popup=f"Half-Hour Interval: {row['half_hour_interval']}<br>Lat: {row['Predicted_Latitude']}, Long: {row['Predicted_Longitude']}",
+                popup=f"Half-Hour Interval: {formatted_time}<br>Lat: {row['Predicted_Latitude']}, Long: {row['Predicted_Longitude']}",
             ).add_to(m)
 
     # Save the map to an HTML file
     m.save('predicted_locations_map.html')
     return m
 
-
 # Plot and save map
 plot_on_map(predicted_locations)
-
-
-
-
-
-
-# # Prepare the feature matrix (X) and target vectors (y_lat and y_lon)
-# X = np.array([x.toArray() for x in pandas_df["features"]])
-# y_lat = pandas_df["Latitude"].values  # Latitude as target
-# y_lon = pandas_df["Longitude"].values  # Longitude as target
-
-# # Convert to DMatrix (XGBoost's internal data structure)
-# dtrain_lat = xgb.DMatrix(X, label=y_lat)
-# dtrain_lon = xgb.DMatrix(X, label=y_lon)
-
-# # Set XGBoost parameters (you can tune these)
-# params = {
-#     "objective": "reg:squarederror",  # Regression task
-#     "max_depth": 6,
-#     "eta": 0.1,
-#     "eval_metric": "rmse"
-# }
-
-# # Train XGBoost models
-# bst_lat = xgb.train(params, dtrain_lat, num_boost_round=100)
-# bst_lon = xgb.train(params, dtrain_lon, num_boost_round=100)
-
-# # Create a function to predict latitude and longitude at future half-hour intervals
-# def predict_at_intervals(model_lat, model_lon, start_time, num_intervals):
-#     predictions = []
-#     for i in range(num_intervals):
-#         # Generate the future half-hour interval
-#         current_time = start_time + pd.Timedelta(minutes=i * 30)
-#         hour = current_time.hour
-#         minute = current_time.minute
-#         half_hour_interval = (hour * 60 + minute) // 30
-        
-#         day_of_week = current_time.dayofweek + 1
-#         # Features: use a constant value for Latitude, Longitude, Altitude, and other time-based features
-#         # Assuming constant altitude for now, adjust accordingly based on your dataset
-        
-#         features = np.array([0, 0, 146, half_hour_interval, day_of_week])
-        
-#         # Create DMatrix for prediction
-#         dtest = xgb.DMatrix(features.reshape(1, -1))
-        
-#         # Get predictions for latitude and longitude
-#         lat_pred = model_lat.predict(dtest)
-#         lon_pred = model_lon.predict(dtest)
-        
-#         predictions.append((current_time, lat_pred[0], lon_pred[0]))
-    
-#     return predictions
-
-# # Predict every half hour for the next 48 half-hour intervals (one day)
-# start_time = pd.Timestamp("2024-11-17 00:00:00")
-# predictions = predict_at_intervals(bst_lat, bst_lon, start_time, 48)
-
-# # Print predictions
-# for pred in predictions:
-#     print(f"Time: {pred[0]}, Latitude: {pred[1]}, Longitude: {pred[2]}")
-
-# # Train XGBoost models for Latitude and Longitude
-# # Train Latitude model
-# model_lat = xgb.train(params, dtrain_lat, num_boost_round=100)
-
-# # Train Longitude model
-# model_lon = xgb.train(params, dtrain_lon, num_boost_round=100)
-
-# # Make predictions using the trained XGBoost models
-# pred_lat = model_lat.predict(dtrain_lat)
-# pred_lon = model_lon.predict(dtrain_lon)
-
-# # Combine the predictions into a DataFrame
-# predictions_df = pd.DataFrame({
-#     'pred_lat': pred_lat,
-#     'pred_lon': pred_lon
-# })
-
-# # Show predictions
-# print(predictions_df.head())
-
-# # Optionally, convert predictions back to Spark DataFrame for further processing
-# predictions_spark = spark.createDataFrame(predictions_df)
-
-# # Show the Spark DataFrame with predictions
-# predictions_spark.show(1000)
-
-
-
-
-
-
-
-
-
-
-
-# Train the XGBoost model
-# num_round = 100
-# bst = xgb.train(params, dtrain, num_round)
-
-# # Make predictions
-# predictions = bst.predict(dtrain)
-
-# # Print out some of the predictions to see the results
-# print(predictions[:10])
-
-
-
-# df_assembled.select("features").show(5) 
-# # normalize data 
-# scaler = SparkStandardScaler(inputCol="features", outputCol="scaled_features", withStd=True, withMean=False)
-# scaler_model = scaler.fit(df_assembled)
-#  # To check if 'features' is correctly formed
-# print("Test5")
-# scaled_df = scaler_model.transform(df_assembled)
-
-# # convert spark to pandas dataframe 
-# scaled_features = scaled_df.select("scaled_features").rdd.map(lambda row: row[0].toArray()).collect()
-# # pandas_df = df_assembled.select("features").toPandas()
-# df_pandas = pd.DataFrame(scaled_features, columns=features)
-
-# # X = np.array(pandas_df["features"].tolist())
-# X = np.array(df_pandas[features].values)
-
-# params = {
-#     "objective": "reg:squarederror",
-#     "max_depth": 6,
-#     "eta": 0.1,
-#     "eval_metric": "rmse"
-# }
-
-
-# dtrain = xgb.DMatrix(X)
-# model = xgb.train(params, dtrain, num_boost_round=100)
-# print("test6")
-
-# predictions = model.predict(dtrain)
-# print(f"Predictions: {predictions[:10]}")
-# # # Assemble data for training
-# df_assembled = assembler.transform(df)
-
-# # Convert Spark DataFrame to Pandas DataFrame for XGBoost
-# pandas_df = df_assembled.select("features", "Latitude", "Longitude").toPandas()
-
-# # Prepare data for XGBoost (splitting features and target)
-# X = np.array(pandas_df["features"].tolist())
-# y_lat = np.array(pandas_df["Latitude"])
-# y_lon = np.array(pandas_df["Longitude"])
-
-# # # # Train XGBoost models for Latitude and Longitude separately
-# dtrain_lat = xgb.DMatrix(X, label=y_lat)
-# dtrain_lon = xgb.DMatrix(X, label=y_lon)
-
-# print("TEST")
-# # # # Set XGBoost parameters
-# # # params = {
-# # #     "objective": "reg:squarederror",
-# # #     "max_depth": 6,
-# # #     "eta": 0.1,
-# # #     "eval_metric": "rmse"
-# # # }
-
-# # # # Train XGBoost models
-# model_lat = xgb.train(params, dtrain_lat, num_boost_round=100)
-# model_lon = xgb.train(params, dtrain_lon, num_boost_round=100)
-
-# # Save the models
-# model_lat.save_model("lat_model.xgb")
-# model_lon.save_model("lon_model.xgb")
-
-# # Create a prediction function
-# def predict_location(model_lat, model_lon, features):
-#     dtest = xgb.DMatrix(features)
-#     pred_lat = model_lat.predict(dtest)
-#     pred_lon = model_lon.predict(dtest)
-#     return pred_lat, pred_lon
-
-# # Example of predicting the next location
-# pred_lat, pred_lon = predict_location(model_lat, model_lon, X[:1])
-
-# print(f"Predicted Latitude: {pred_lat[0]}, Predicted Longitude: {pred_lon[0]}")
