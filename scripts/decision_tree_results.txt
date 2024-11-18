@@ -1,0 +1,75 @@
+Decision Tree Classifier Results
+-------------------------------
+Accuracy: 0.4428
+Precision: 0.3750
+Recall: 0.4428
+
+Decision Tree Structure:
+DecisionTreeClassificationModel: uid=DecisionTreeClassifier_9d278a6591b0, depth=5, numNodes=45, numClasses=9, numFeatures=3
+  If (feature 2 <= 1.8773349644593302)
+   If (feature 2 <= 0.04164524495315265)
+    If (feature 0 <= 9.94703496309313)
+     If (feature 1 <= 46.362570551511126)
+      If (feature 1 <= 34.82698209277751)
+       Predict: 0.0
+      Else (feature 1 > 34.82698209277751)
+       Predict: 1.0
+     Else (feature 1 > 46.362570551511126)
+      Predict: 0.0
+    Else (feature 0 > 9.94703496309313)
+     If (feature 1 <= 36.53795353695265)
+      If (feature 1 <= 21.55589474785444)
+       Predict: 0.0
+      Else (feature 1 > 21.55589474785444)
+       Predict: 1.0
+     Else (feature 1 > 36.53795353695265)
+      Predict: 0.0
+   Else (feature 2 > 0.04164524495315265)
+    If (feature 1 <= 73.63675945596633)
+     If (feature 2 <= 0.2324455811249605)
+      If (feature 1 <= 32.618238985591766)
+       Predict: 7.0
+      Else (feature 1 > 32.618238985591766)
+       Predict: 0.0
+     Else (feature 2 > 0.2324455811249605)
+      If (feature 1 <= 38.03299911685627)
+       Predict: 5.0
+      Else (feature 1 > 38.03299911685627)
+       Predict: 0.0
+    Else (feature 1 > 73.63675945596633)
+     If (feature 2 <= 0.6168783764934025)
+      Predict: 7.0
+     Else (feature 2 > 0.6168783764934025)
+      If (feature 2 <= 1.0791498727000803)
+       Predict: 7.0
+      Else (feature 2 > 1.0791498727000803)
+       Predict: 0.0
+  Else (feature 2 > 1.8773349644593302)
+   If (feature 2 <= 6.292217679009783)
+    If (feature 1 <= 41.52671312026034)
+     Predict: 0.0
+    Else (feature 1 > 41.52671312026034)
+     If (feature 0 <= 7.6212717630178695)
+      Predict: 4.0
+     Else (feature 0 > 7.6212717630178695)
+      If (feature 0 <= 12.488249364810613)
+       Predict: 0.0
+      Else (feature 0 > 12.488249364810613)
+       Predict: 4.0
+   Else (feature 2 > 6.292217679009783)
+    If (feature 2 <= 13.187872139666688)
+     If (feature 1 <= 45.68485917235323)
+      Predict: 2.0
+     Else (feature 1 > 45.68485917235323)
+      If (feature 0 <= 17.9944041363716)
+       Predict: 2.0
+      Else (feature 0 > 17.9944041363716)
+       Predict: 3.0
+    Else (feature 2 > 13.187872139666688)
+     If (feature 1 <= 43.50527793775102)
+      If (feature 1 <= 29.54852271190051)
+       Predict: 0.0
+      Else (feature 1 > 29.54852271190051)
+       Predict: 3.0
+     Else (feature 1 > 43.50527793775102)
+      Predict: 3.0
