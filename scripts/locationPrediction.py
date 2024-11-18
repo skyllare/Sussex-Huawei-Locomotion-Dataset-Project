@@ -1,18 +1,15 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, unix_timestamp, hour, minute, dayofmonth, year, month, from_unixtime
-from pyspark.ml.feature import VectorAssembler
+from datetime import timedelta, datetime
 import numpy as np
 import pandas as pd
-from pyspark.sql import functions as F
-from pyspark.sql.functions import lit
-from pyspark.sql.functions import date_format
 import tensorflow as tf
+import folium
+from pyspark.sql import SparkSession, functions as F
+from pyspark.sql.functions import col, unix_timestamp, hour, minute, dayofmonth, year, month, from_unixtime, lit, date_format
+from pyspark.ml.feature import VectorAssembler
+from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from tensorflow.keras.optimizers import Adam
-from sklearn.preprocessing import StandardScaler
-import folium
-from datetime import timedelta, datetime
 
 # Initialize Spark session
 spark = SparkSession.builder \
@@ -60,7 +57,16 @@ pandas_df[['Latitude', 'Longitude']] = scaler.fit_transform(pandas_df[['Latitude
 
 # Prepare the data for LSTM (sequence data preparation)
 def create_sequences(df, seq_length):
-    """Sequence data preparation for LSTM"""
+    """
+    Prepare sequence data for LSTM by splitting into sequences and labels.
+    
+    Args:
+        df: DataFrame with the features (Latitude, Longitude).
+        seq_length: Length of each sequence to be used for training.
+        
+    Returns:
+        Tuple: Sequences and corresponding labels as numpy arrays.
+    """
     sequences = []
     labels = []
     for i in range(len(df) - seq_length):
@@ -99,6 +105,16 @@ predictions_original = scaler.inverse_transform(predictions)
 
 # Generate predicted locations for each half-hour of the day
 def predict_for_half_hours(predicted_locations, df):
+    """
+    Merge predicted locations with the original half-hour intervals.
+    
+    Args:
+        predicted_locations: Predicted latitude and longitude values.
+        df: Original DataFrame containing half-hour intervals.
+        
+    Returns:
+        DataFrame with predicted locations and intervals.
+    """
     # Merge predictions with original intervals, assume that predictions align with the half-hour intervals
     df_predictions = pd.DataFrame(predicted_locations, columns=['Predicted_Latitude', 'Predicted_Longitude'])
     
@@ -113,9 +129,16 @@ predicted_locations = predict_for_half_hours(predictions_original, pandas_df)
 
 
 # Visualize on a map using Folium
-"""Plot the """
-# Visualize on a map using Folium
 def plot_on_map(predicted_df):
+    """
+    Plot predicted locations on a Folium map and save to an HTML file.
+    
+    Args:
+        predicted_df: DataFrame with predicted locations and half-hour intervals.
+        
+    Returns:
+        folium.Map: Interactive map with predicted locations plotted.
+    """
     # Initialize the map at the first predicted location (using the first lat/long)
     m = folium.Map(location=[predicted_df['Predicted_Latitude'][0], predicted_df['Predicted_Longitude'][0]], zoom_start=13)
 
