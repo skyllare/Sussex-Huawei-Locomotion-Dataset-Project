@@ -21,16 +21,14 @@ def get_data():
         .option("spark.mongodb.input.uri", "mongodb://localhost:27017/Project.Hips_Motion") \
         .load()
 
-    # Optionally, select specific columns from the Hips_Motion collection
     Hips_Data = Hips_Data.select("date", "Time", 
                                  "AccelerationX", "AccelerationY", "AccelerationZ",
                                  "MagnetometerX", "MagnetometerY", "MagnetometerZ",
-                                 "LinearAccelerationX", "LinearAccelerationy", "LinearAccelerationZ")  # Adjust columns as needed
+                                 "LinearAccelerationX", "LinearAccelerationy", "LinearAccelerationZ") 
 
     # Join the two datasets on the common columns (e.g., "date" and "Time")
     return Label_Data.join(Hips_Data, on=["date", "Time"], how="inner")
 
-# def build_tree(combined_data):
     
 combined_data = get_data()
 combined_data = combined_data.withColumn(
@@ -59,7 +57,7 @@ combined_data = assembler.transform(combined_data)
 
 train_data, test_data = combined_data.randomSplit([0.8, 0.2], seed=1234)
 
-dt = DecisionTreeClassifier(featuresCol="features", labelCol="CoarseLabel")
+dt = DecisionTreeClassifier(featuresCol="features", labelCol="CoarseLabel", maxDepth=10)
 
 model = dt.fit(train_data)
 
