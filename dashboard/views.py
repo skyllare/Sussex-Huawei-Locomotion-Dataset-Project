@@ -79,3 +79,21 @@ def chat(request):
     return render(request, "dashboard/chat.html")
 
 
+def home(request):
+    return render(request, "dashboard/home.html")
+
+
+def home(request):
+    return render(request, "dashboard/home.html")
+
+def activity_recognition(request):
+    return render(request, "dashboard/activity_recognition.html")
+
+def anomaly_detection(request):
+    return render(request, "dashboard/anomaly_detection.html")
+
+def location_prediction(request):
+    return render(request, "dashboard/location_prediction.html")
+
+def activity_statistics(request):
+    return render(request, "dashboard/activity_statistics.html")
