@@ -102,6 +102,15 @@ body {
     background-color: #eeeeee
 }
 
+.logo-text{
+    margin-top: 5%;
+}
+
+.logo-text{
+    margin-top: 5%;
+}
+
+
 [tabindex="-1"]:focus {
     outline: 0 !important
 }
