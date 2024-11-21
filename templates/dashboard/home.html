@@ -10,5 +10,59 @@
 {% endblock %}
 {% block content %}
 
+<div class="container-fluid">
+    <!-- ============================================================== -->
+    <!-- Start Page Content -->
+    <!-- ============================================================== -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">The Data</h5>
+                    <p>We used the University of Sussex-Huawei Locomotion (SHL) dataset. This is a versatile annotated dataset for multimodal locomotion analytics of mobile users.
+                        This data consists of movement measurement spanning across many days with information such as mode of trasnportation, temperature, location, etc. To use the
+                        data we converted the txt files to csv files and then uploaded those files to a MongoDB database. Utalizing NoSQL queries and PySpark functions, we have 
+                        been able to collect various levels of information that can be found through this website.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">The Team</h5>
+                    <p>Skyllar Estill | skyllar.estill@wsu.edu</p>
+                    <p>Molly Iverson | molly.s.iverson@wsu.edu</p>
+                    <p>Sierra Pine | sierra.pine@wsu.edu</p>
+                    <p>Caitlin Graves | caitlin.graves@wsu.edu</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Project Goals</h5>
+                    <p>With this project, we set out to use the University of Sussex-Huawei Locomotion (SHL) dataset to create 
+                        predictions based on the user's activities. Our objective was to leverage this rich dataset, which 
+                        captures various locomotion patterns, to develop advanced analytics and models 
+                        that can identify trends in user behavior.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Citations</h5>
+                    <p>[1] H. Gjoreski, M. Ciliberto, L. Wang, F. J. O. Morales, S. Mekki, S. Valentin, D. Roggen. 
+                        “The University of Sussex-Huawei Locomotion and Transportation Dataset for Multimodal Analytics 
+                        with Mobile Devices.” IEEE Access 6 (2018): 42592-42604.</p>
+                    <p>[2] L. Wang, H. Gjoreski, M. Ciliberto, S. Mekki, S. Valentin, and D. Roggen, “Enabling reproducible 
+                        research in sensor-based transportation mode recognition with the Sussex-Huawei dataset,” IEEE Access 
+                        7 (2019): 10870-10891.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
+</div>
 {% endblock %}
