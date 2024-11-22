@@ -6,9 +6,77 @@
     </style>
 {% endblock %}
 {% block page_title %}
- Home
+ Activity Statistics
 {% endblock %}
 {% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Dataset-Wide Statistics -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>Dataset-Wide Statistics</strong></h5>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><strong>Activity</strong></th>
+                            <th><strong>Total Time</strong></th>
+                            <th><strong>Percentage</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in dataset_stats %}
+                        <tr>
+                            <td>{{ stat.Activity }}</td>
+                            <td>{{ stat.TotalTime }}</td>
+                            <td>{{ stat.Percentage }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Daily Statistics -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>Daily Statistics</strong></h5>
+                    <form method="get" class="mb-3">
+                        <label for="date-select">Select Date:</label>
+                        <select id="date-select" name="date" class="form-control" onchange="this.form.submit()">
+                            <option value="">-- Select a Date --</option>
+                            {% for date in daily_stats_dates %}
+                            <option value="{{ date }}" {% if date == selected_date %}selected{% endif %}>
+                                {{ date }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th><strong>Activity</strong></th>
+                            <th><strong>Total Time</strong></th>
+                            <th><strong>Percentage</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in daily_stats %}
+                        <tr>
+                            <td>{{ stat.Activity }}</td>
+                            <td>{{ stat.TotalTime }}</td>
+                            <td>{{ stat.Percentage }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 {% endblock %}
