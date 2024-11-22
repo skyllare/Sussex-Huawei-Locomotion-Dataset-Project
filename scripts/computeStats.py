@@ -71,7 +71,7 @@ def compute_stats(spark, start_time, end_time=None):
         # Each instance represents 10 milliseconds
         "TotalTimeMs", col("Count") * 10
     ).withColumn(
-        "Total Time", expr("CASE " +
+        "TotalTime", expr("CASE " +
                            "WHEN TotalTimeMs < 60000 THEN CONCAT(ROUND(TotalTimeMs / 1000, 2), ' seconds') " +
                            "WHEN TotalTimeMs < 3600000 THEN CONCAT(ROUND(TotalTimeMs / 60000, 2), ' minutes') " +
                            "ELSE CONCAT(ROUND(TotalTimeMs / 3600000, 2), ' hours') " +
@@ -94,7 +94,7 @@ def compute_stats(spark, start_time, end_time=None):
 
     label_distribution = label_distribution.orderBy("CoarseLabel")
     label_distribution = label_distribution.select(
-        "Activity", "Total Time", "Percentage")
+        "Activity", "TotalTime", "Percentage")
     label_distribution.show()
 
 
@@ -107,7 +107,7 @@ def compute_stats_by_date(label_data):
         # Each instance represents 10 milliseconds
         "TotalTimeMs", col("Count") * 10
     ).withColumn(
-        "Total Time", expr(
+        "TotalTime", expr(
             "CASE " +
             "WHEN TotalTimeMs < 60000 THEN CONCAT(ROUND(TotalTimeMs / 1000, 2), ' seconds') " +
             "WHEN TotalTimeMs < 3600000 THEN CONCAT(ROUND(TotalTimeMs / 60000, 2), ' minutes') " +
@@ -137,7 +137,7 @@ def compute_stats_by_date(label_data):
     ).withColumn(
         "Percentage", round((col("Count") / col("TotalInstances")) * 100, 2)
     ).select(
-        "date", "Activity", "Total Time", "Percentage"
+        "date", "Activity", "TotalTime", "Percentage"
     )
 
     label_distribution.show(truncate=False)
@@ -167,7 +167,7 @@ def compute_stats_for_dataset(label_data):
         # Each instance represents 10 milliseconds
         "TotalTimeMs", col("Count") * 10
     ).withColumn(
-        "Total Time", expr(
+        "TotalTime", expr(
             "CASE " +
             "WHEN TotalTimeMs < 60000 THEN CONCAT(ROUND(TotalTimeMs / 1000, 2), ' seconds') " +
             "WHEN TotalTimeMs < 3600000 THEN CONCAT(ROUND(TotalTimeMs / 60000, 2), ' minutes') " +
@@ -189,7 +189,7 @@ def compute_stats_for_dataset(label_data):
 
     # Order by CoarseLabel for readability
     label_distribution = label_distribution.orderBy("CoarseLabel").select(
-        "Activity", "Total Time", "Percentage"
+        "Activity", "TotalTime", "Percentage"
     )
 
     label_distribution.show(truncate=False)
