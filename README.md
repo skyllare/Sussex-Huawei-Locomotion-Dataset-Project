@@ -20,14 +20,17 @@ We aim to build an **activity analyzer application** that uses data from wearabl
 
 ### Application Functionalities:
 
-1. **Sensor Statistics**:  
-   Monitor and display statistics (e.g., frequency, min/max values, average, standard deviation) for sensor data, given a specific time frame, sensor type, or activity label.
+1. **Activity Prediction**:  
+   Predict the user's activity based on measurements like acceleration, orientation, linear acceleration, altitude, temperature, and more, using Machine Learning algorithms like Decision Tree and Random Forest.
 
-2. **Frequency Spectrum Analytics**:  
-   Visualize the frequency spectrum or wavelet transform of sensor data, alongside factors like associated activity, traffic conditions, or phone placement.
+2. **Location Prediction**:  
+   Predict the user's location based on historical GPS data, using a Recurrent Neural Network with an LSTM model.
 
-3. **Activity Recognition and Prediction**:  
-   Use machine learning to recognize and predict user activities based on data collected from wearable sensors.
+3. **Anomaly Detection**:  
+   Identify unusual patterns or outliers in the dataset using the Isolation Forest machine learning algorithm.
+
+4. **Activity Statistics**:
+   Show daily and overall statistics on the duration and distribution of user activities.
 
 ---
 
@@ -37,14 +40,14 @@ The application leverages the **University of Sussex-Huawei Locomotion and Trans
 
 - **Link**: [SHL Dataset](http://www.shl-dataset.org/dataset/)  
 - **Number of Files**: 5 zip files  
-- **Total Storage Size**: 18.62 GB  
+- **Total Storage Size**: 58 GB  
 
 ---
 
 ## Programming Tools
 
 - **Programming Languages**: Python, SQL, Matlab
-- **Tools**: MongoDB, Hadoop MapReduce, Apache Spark, Django
+- **Tools**: MongoDB, Apache Spark, Django
 
 ---
 
