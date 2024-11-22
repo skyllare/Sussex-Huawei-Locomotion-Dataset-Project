@@ -93,3 +93,11 @@ python -m scripts.uploadData
 ```bash
 python -m scripts.cleanData
 ```
+```bash
+python -m scripts.computeStats
+```
+
+### 5. Run the application
+```bash
+python manage.py runserver
+```
