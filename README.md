@@ -109,3 +109,4 @@ pip install django
 ```bash
 python manage.py runserver
 ```
+* Go to ```http://localhost:8000/dashboard/``` in your browser
