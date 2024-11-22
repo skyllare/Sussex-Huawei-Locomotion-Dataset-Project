@@ -101,6 +101,11 @@ python -m scripts.computeStats
 ```
 
 ### 5. Run the application
+* Install Django
+```bash
+pip install django
+```
+* Run the app
 ```bash
 python manage.py runserver
 ```
