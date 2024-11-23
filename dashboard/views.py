@@ -69,7 +69,18 @@ def home(request):
 
 
 def activity_recognition(request):
-    return render(request, "dashboard/activity_recognition.html")
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client.get_database("Project")
+
+    dataset_output = list(db["decision_tree_output"].find({}, {"_id": 0}))
+
+    return render(
+        request,
+        "dashboard/activity_recognition.html",
+        {
+            "dataset_output": dataset_output,
+        },
+    )
 
 
 def anomaly_detection(request):
