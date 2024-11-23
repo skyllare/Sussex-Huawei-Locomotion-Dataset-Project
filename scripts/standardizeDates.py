@@ -7,6 +7,7 @@ client = MongoClient("mongodb://localhost:27017/")
 db = client["Project"]
 collections = db.list_collection_names()
 
+
 # Function to standardize dates to MM/DD/YYYY format
 def standardize_date(date_str):
     clean_date = re.sub(r'\D', '', date_str)
@@ -16,13 +17,15 @@ def standardize_date(date_str):
     year = f"20{year}" if int(year) < 50 else f"19{year}"
     return f"{month}/{day}/{year}"
 
+
 # Function to process documents in a collection
 def process_documents(collection_name, batch_size=1000):
-    printf(f"Processing collection: {collection_name}")
+    print(f"Processing collection: {collection_name}")
     collection = db[collection_name]
-    cursor = collection.find({"date": {"$exists": True}}, {"_id": 1, "date": 1})
+    cursor = collection.find({"date": {"$exists": True}}, {
+                             "_id": 1, "date": 1})
     batch = []
-    
+
     for document in cursor:
         original_date = document["date"]
         standardized_date = standardize_date(original_date)
@@ -43,27 +46,18 @@ def process_documents(collection_name, batch_size=1000):
 
     print(f"Finished processing collection: {collection_name}")
 
+
 # Function to perform bulk updates
 def bulk_update(collection, batch):
     collection.bulk_write(batch)
 
+
 # Function to standardize dates in all collections
 def standardize_dates_in_all_collections():
-    collections_to_skip = [
-        "labels_track_traffic",
-        "labels_track_tunnels",
-        "labels_track_food",
-        "dataset_stats",
-        "daily_stats",
-        "Hips_Battery",
-        "labels_track_social",
-        "Hips_API",
-        "labels_track_road"
-    ]
-    
-    collections_to_process = [col for col in collections if col not in collections_to_skip]
+    collections_to_process = [col for col in collections]
     with Pool() as pool:
         pool.map(process_documents, collections_to_process)
+
 
 if __name__ == "__main__":
     standardize_dates_in_all_collections()
