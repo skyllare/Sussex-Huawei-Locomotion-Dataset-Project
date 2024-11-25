@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from pymongo import MongoClient
+import os
+from django.conf import settings 
 
 # Create your views here.
 
@@ -84,7 +86,12 @@ def activity_recognition(request):
 
 
 def anomaly_detection(request):
-    return render(request, "dashboard/anomaly_detection.html")
+    image_directory = os.path.join(settings.STATICFILES_DIRS[0], 'images/anomalies')
+    image_files = [f for f in os.listdir(image_directory) if f.endswith('.png')]
+
+    plot_urls = {f.replace('_', ' ').replace('.png', '').title(): f"/static/images/anomalies/{f}" for f in image_files}
+
+    return render(request, "dashboard/anomaly_detection.html", {"plot_urls": plot_urls})
 
 
 def location_prediction(request):
