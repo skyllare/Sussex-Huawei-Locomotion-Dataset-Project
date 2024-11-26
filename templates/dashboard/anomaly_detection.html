@@ -9,6 +9,85 @@
  Home
 {% endblock %}
 {% block content %}
+<div class="container-fluid">
+    <h2>Anomaly Detection</h2>
+    <div class="row">
+        <!-- Isolation Forest Description Card -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>Isolation Forest</strong> </h5>
+                        <p> The Isolation Forest algorithm is an efficient and scalable method used for detecting anomalies in high-dimensional datasets. 
+                            It works by building a collection of isolation trees (iTrees), where each tree is constructed by randomly selecting a feature 
+                            and then randomly selecting a split value within that feature's range. This process is recursively repeated to partition the data into smaller subsets. 
+                            The splitting continues until a point is isolated (i.e., separated from all other data points) or until the tree reaches a maximum depth. This randomness 
+                            in choosing features and split values helps in isolating anomalies, which are often rare and distinct from the majority of the data.
+                        </p>
+                        <p>
+                            The key principle behind Isolation Forest is that anomalies are few and different from the normal data points. As a result, they tend to 
+                            require fewer splits to be isolated. In contrast, normal points, which are more similar to each other, take longer to isolate as they form 
+                            denser clusters in the feature space. Thus, the path length — the number of splits required to isolate a data point — becomes a crucial metric. 
+                            Shorter path lengths indicate that a point is easier to isolate and, therefore, likely an anomaly. Longer path lengths indicate that the point is more 
+                            typical or normal, requiring more splits to isolate it. Once the trees are constructed, the anomaly score for each point is calculated based on the average path length from multiple trees.
 
+                        </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anomalies Scores Description Card -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>How the Model Determines Anomalies</strong> </h5>
+                        <p> 
+                            Anomalies: These are isolated quickly because they are different from the majority of the data,
+                            which means they require fewer splits in the trees. Consequently, anomalies have shorter path lengths,
+                            and their anomaly scores tend to be closer to -1.
+                        </p>
+                        <p>
+                            Normal Points: These points lie in dense regions of the data and are harder to isolate. They require more 
+                            splits, meaning they have longer path lengths and higher anomaly scores, closer to 1.
+                        </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anomaly Images -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>Anomaly Detections</strong></h5>
+                    <div>
+                        <!-- Selection -->
+                        <label for="plot-select">Select a feature to see anomalies: </label>
+                        <select id="plot-select">
+                            <option value="" disabled selected>Select an option...</option>
+                            {% for title, url in plot_urls.items %}
+                            <option value="{{ url }}">{{ title }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <!-- Images -->
+                        <div class="col-12 mt-4 text-center">
+                            <div class="plot-container">
+                                <img id="plot-display" class="img-fluid border rounded" src="" alt="">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    document.getElementById('plot-select').addEventListener('change', function () {
+        const selectedUrl = this.value;
+        document.getElementById('plot-display').src = selectedUrl;
+    });
+</script>
 
 {% endblock %}
