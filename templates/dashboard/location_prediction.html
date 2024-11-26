@@ -5,10 +5,264 @@
     <style xmlns="http://www.w3.org/1999/html">
     </style>
 {% endblock %}
+
 {% block page_title %}
- Home
+Location Prediction
 {% endblock %}
+
 {% block content %}
+<html>
+<head>
+    <title>Location Prediction</title>
+    <style>
+        /* Set the size of the map */
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        /* Style for POIs list */
+        #pois {
+            margin-top: 20px;
+        }
+        /* Responsive design */
+        @media (max-width: 768px) {
+            #map {
+                height: 400px;
+            }
+            #pois {
+                font-size: 14px;
+            }
+        }
+    </style>
+    <!-- Places library loaded -->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&libraries=places"></script>
+    <script>
+        // Parse the JSON data passed from Django
+        const locations = {{ locations|safe }};
+        const nextLocation = {{ next_location|safe }};
 
+        let map;
+        let markers = [];
+        let polylines = [];
+        let geocoder;
+        let infoWindow;
+        let pois = [];
 
+        function initMap() {
+            if (locations.length === 0) {
+                console.error("No locations to display.");
+                return;
+            }
+
+            // Initialize Geocoder and InfoWindow
+            geocoder = new google.maps.Geocoder();
+            infoWindow = new google.maps.InfoWindow();
+
+            // Initialize the map centered at the first location
+            const firstLocation = locations[0];
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 13,
+                center: { lat: nextLocation.lat, lng: nextLocation.lng },
+            });
+
+            const pathCoordinates = [];
+            
+            // Ensure invalid predicted data points are not included
+            const filteredLocations = locations.filter(loc => loc.lat < 50.9);
+
+            // Add markers for all locations
+            filteredLocations.forEach((loc, index) => {
+                const position = { lat: loc.lat, lng: loc.lng };
+                pathCoordinates.push(position);
+
+                // Determine if this is the next location
+                const isNextLocation = (loc.half_hour_interval === nextLocation.half_hour_interval);
+
+                // Choose marker icon based on whether it's the next location
+                // A green marker is given to the next location, with all other locations colored red
+                const markerIcon = isNextLocation
+                    ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' // Next location
+                    : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';  // Regular locations
+
+                const marker = new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    title: 'Loading...',
+                    icon: markerIcon,
+                });
+
+                markers.push(marker);
+
+                // Perform reverse geocoding to get location name
+                geocodeLatLng(position, marker, loc.time);
+            });
+
+            // Draw dashed blue polyline between the points
+            const dashedLine = new google.maps.Polyline({
+                path: pathCoordinates,
+                geodesic: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 0,
+                strokeWeight: 2,
+                icons: [{
+                    icon: {
+                        path: 'M 0,-1 0,1',
+                        strokeOpacity: .5, // This applies the dashed line
+                        scale: 2
+                    },
+                    offset: '0',
+                    repeat: '10px'
+                }],
+            });
+
+            dashedLine.setMap(map);
+            polylines.push(dashedLine);
+
+            // Fetch and display POIs near the first location
+            fetchPOIs(firstLocation.lat, firstLocation.lng);
+        }
+
+        // Performs reverse geocoding to display the correct information
+        function geocodeLatLng(position, marker, time) {
+            geocoder.geocode({ location: position }, (results, status) => {
+                if (status === 'OK') {
+                    if (results[0]) {
+                        const locationName = results[0].formatted_address;
+                        marker.setTitle(locationName);
+                        
+                        // Create info window content
+                        const infoContent = `
+                            <div>
+                                <strong>${locationName}</strong><br/>
+                                <strong>Time:</strong> ${time}<br/>
+                            </div>
+                        `;
+
+                        // Add click listener to open info window
+                        marker.addListener('click', () => {
+                            infoWindow.setContent(infoContent);
+                            infoWindow.open(map, marker);
+                        });
+                    } else {
+                        console.warn('No results found for reverse geocoding.');
+                        marker.setTitle('Unknown Location');
+                    }
+                } else {
+                    console.error('Geocoder failed due to: ' + status);
+                    marker.setTitle('Geocoder failed');
+                }
+            });
+        }
+
+        // Function to fetch POIs near a given location using Places API
+        function fetchPOIs(lat, lng) {
+            const location = new google.maps.LatLng(lat, lng);
+            const request = {
+                location: location,
+                radius: '1500', // 1.5 km radius
+                type: ['point_of_interest'],
+            };
+
+            const service = new google.maps.places.PlacesService(map);
+            service.nearbySearch(request, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    pois = results.slice(0, 10); // Limit to top 10 POIs
+                    fetchDistancesAndDisplayPOIs(lat, lng);
+                } else {
+                    console.error('PlacesService failed due to: ' + status);
+                }
+            });
+        }
+
+        // Get the distances and display the poi's
+        function fetchDistancesAndDisplayPOIs(currentLat, currentLng) {
+            const origin = new google.maps.LatLng(currentLat, currentLng);
+            const destinations = pois.map(poi => {
+                return new google.maps.LatLng(poi.geometry.location.lat(), poi.geometry.location.lng());
+            });
+        
+            const service = new google.maps.DistanceMatrixService();
+        
+            service.getDistanceMatrix(
+                {
+                    origins: [origin],
+                    destinations: destinations,
+                    travelMode: 'DRIVING', // Change to 'WALKING', 'BICYCLING', or 'TRANSIT' as needed
+                    unitSystem: google.maps.UnitSystem.METRIC,
+                },
+                (response, status) => {
+                    if (status === 'OK') {
+                        const results = response.rows[0].elements;
+        
+                        // Display the POIs with distances
+                        displayPOIsWithDistances(results);
+                    } else {
+                        console.error('Distance Matrix API failed due to: ' + status);
+                    }
+                }
+            );
+        }
+
+        // Function to display POIs in a list
+        function displayPOIsWithDistances(distances) {
+            const poisTableBody = document.querySelector('#pois-table tbody');
+            poisTableBody.innerHTML = ''; // Clear existing rows
+        
+            pois.forEach((poi, index) => {
+                const distanceInfo = distances[index];
+                const distanceText = distanceInfo.status === 'OK' ? distanceInfo.distance.text : 'N/A';
+        
+                // Create a new table row
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <th scope="row">${index + 1}</th>
+                    <td>${poi.name}</td>
+                    <td>${distanceText}</td>
+                    <td>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${poi.geometry.location.lat()},${poi.geometry.location.lng()}" target="_blank">
+                            Open in Google Maps
+                        </a>
+                    </td>
+                `;
+        
+                // Append the row to the table body
+                poisTableBody.appendChild(row);
+            });
+        }
+        
+
+        // Initialize the map when the window loads
+        window.onload = initMap;
+    </script>
+</head>
+<body>
+    <h1>Predicted Locations for {{ formatted_date }}</h1>
+    <div id="map"></div>
+    <!-- Create the POI table below -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title m-b-0">Points of Interest Near Current Predicted Location</h5>
+                    </div>
+                    <table class="table" id="pois-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Location</th>
+                                <th scope="col">Travel Distance</th>
+                                <th scope="col">Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
 {% endblock %}
